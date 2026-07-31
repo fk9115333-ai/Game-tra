@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Game Tracker Pro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- شريط التنقل العلوي -->
+    <header class="glass-header">
+        <div class="logo">
+            <i class="fa-solid fa-gamepad"></i>
+            <span>تتبعي</span>
+        </div>
+        <div class="header-actions">
+            <span class="games-count" id="upcomingCount">0 قادمة</span>
+            <button class="icon-btn" onclick="openSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button class="icon-btn primary" onclick="openSearch()"><i class="fa-solid fa-plus"></i></button>
+        </div>
+    </header>
+
+    <!-- نافذة البحث السريع -->
+    <div id="searchModal" class="modal">
+        <div class="modal-content glass-panel">
+            <div class="search-header">
+                <input type="text" id="searchInput" placeholder="ابحث عن لعبة (مثال: Resident Evil)..." autocomplete="off">
+                <button class="icon-btn" onclick="closeSearch()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="searchResults" class="search-results"></div>
+        </div>
+    </div>
+
+    <!-- المحتوى الرئيسي -->
+    <main id="app-content">
+        <section id="upcoming-page" class="page active">
+            <div class="filters">
+                <button class="filter-chip active">الكل</button>
+                <button class="filter-chip">PS5</button>
+                <button class="filter-chip">PC</button>
+            </div>
+            <div id="upcomingList" class="games-grid"></div>
+        </section>
+    </main>
+
+    <!-- شريط التنقل السفلي -->
+    <nav class="bottom-nav glass-panel">
+        <button class="nav-item active"><i class="fa-solid fa-calendar-days"></i><span>القادمة</span></button>
+        <button class="nav-item"><i class="fa-solid fa-check-double"></i><span>المختومة</span></button>
+        <button class="nav-item"><i class="fa-solid fa-clock"></i><span>الانتظار</span></button>
+        <button class="nav-item"><i class="fa-solid fa-chart-pie"></i><span>إحصائيات</span></button>
+    </nav>
+
+    <script src="app.js"></script>
+</body>
+</html>
