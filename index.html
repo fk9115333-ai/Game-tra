@@ -32,15 +32,39 @@
         </div>
     </div>
 
-    <!-- المحتوى الرئيسي -->
+    <!-- المحتوى الرئيسي (الصفحات) -->
     <main id="app-content">
+        <!-- 1. صفحة الألعاب القادمة -->
         <section id="upcoming-page" class="page active">
             <div class="filters">
                 <button class="filter-chip active">الكل</button>
                 <button class="filter-chip">PS5</button>
                 <button class="filter-chip">PC</button>
             </div>
-            <div id="upcomingList" class="games-grid"></div>
+            <div id="upcomingList" class="games-grid">
+                <!-- سيتم حقن البطاقات هنا -->
+            </div>
+        </section>
+
+        <!-- 2. صفحة الألعاب المختومة -->
+        <section id="completed-page" class="page" style="display: none; padding: 60px 20px; text-align: center;">
+            <i class="fa-solid fa-check-double" style="font-size: 4rem; color: var(--success); margin-bottom: 20px;"></i>
+            <h2>الألعاب المختومة</h2>
+            <p style="color: var(--text-muted); margin-top: 10px;">بمجرد تختيمك للعبة، ستتمكن من نقلها إلى هنا مع إضافة تقييمك الخاص وعدد ساعات اللعب.</p>
+        </section>
+
+        <!-- 3. صفحة قائمة الانتظار -->
+        <section id="waitlist-page" class="page" style="display: none; padding: 60px 20px; text-align: center;">
+            <i class="fa-solid fa-clock" style="font-size: 4rem; color: var(--text-muted); margin-bottom: 20px;"></i>
+            <h2>قائمة الانتظار</h2>
+            <p style="color: var(--text-muted); margin-top: 10px;">الألعاب التي تخطط للعبها لاحقاً ستظهر هنا لتنظيم جدولك.</p>
+        </section>
+
+        <!-- 4. صفحة الإحصائيات -->
+        <section id="stats-page" class="page" style="display: none; padding: 60px 20px; text-align: center;">
+            <i class="fa-solid fa-chart-pie" style="font-size: 4rem; color: var(--primary-light); margin-bottom: 20px;"></i>
+            <h2>الإحصائيات</h2>
+            <p style="color: var(--text-muted); margin-top: 10px;">هنا سيظهر ملخص لعدد الألعاب التي أنهيتها، إجمالي ساعات اللعب، وأكثر التصنيفات التي تلعبها.</p>
         </section>
     </main>
 
