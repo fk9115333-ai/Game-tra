@@ -1,13 +1,12 @@
 /**
  * إعدادات المشروع
- * تم دمج مفتاح RAWG API الخاص بك
  */
 const CONFIG = {
     RAWG_API_KEY: '4ea2968a10604ee0bacd122f1ad00cee', 
 };
 
 /**
- * نظام التخزين المحلي (LocalStorage)
+ * نظام التخزين
  */
 const StorageDB = {
     saveGame: function(gameData) {
@@ -21,6 +20,11 @@ const StorageDB = {
     },
     getGames: function() {
         return JSON.parse(localStorage.getItem('myGames')) || [];
+    },
+    deleteGame: function(id) {
+        let games = this.getGames();
+        games = games.filter(g => g.id !== id);
+        localStorage.setItem('myGames', JSON.stringify(games));
     }
 };
 
@@ -30,7 +34,23 @@ const searchInput = document.getElementById('searchInput');
 const searchResults = document.getElementById('searchResults');
 const upcomingList = document.getElementById('upcomingList');
 
-// فتح وإغلاق نافذة البحث
+// تفعيل شريط التنقل السفلي
+const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+const pages = document.querySelectorAll('.page');
+
+navItems.forEach((item, index) => {
+    item.addEventListener('click', () => {
+        // إزالة التفعيل من جميع الأزرار وإخفاء الصفحات
+        navItems.forEach(nav => nav.classList.remove('active'));
+        pages.forEach(page => page.style.display = 'none');
+
+        // تفعيل الزر المضغوط وإظهار الصفحة الخاصة به
+        item.classList.add('active');
+        if(pages[index]) pages[index].style.display = 'block';
+    });
+});
+
+// فتح وإغلاق البحث
 function openSearch() {
     searchModal.classList.add('active');
     searchInput.focus();
@@ -42,7 +62,7 @@ function closeSearch() {
     searchResults.innerHTML = '';
 }
 
-// البحث الفوري
+// ميزة البحث الفوري مع Debounce
 let searchTimeout;
 searchInput.addEventListener('input', (e) => {
     clearTimeout(searchTimeout);
@@ -60,19 +80,18 @@ searchInput.addEventListener('input', (e) => {
     }, 500);
 });
 
-// جلب البيانات من API
+// جلب البيانات الأساسية من RAWG
 async function fetchGamesFromAPI(query) {
     try {
         const response = await fetch(`https://api.rawg.io/api/games?search=${query}&key=${CONFIG.RAWG_API_KEY}&page_size=6`);
         const data = await response.json();
         renderSearchResults(data.results);
     } catch (error) {
-        console.error('API Error:', error);
-        searchResults.innerHTML = '<div style="padding:20px; color:#e50914; text-align:center;">حدث خطأ أثناء جلب البيانات.</div>';
+        searchResults.innerHTML = '<div style="padding:20px; color:#e50914;">حدث خطأ في الاتصال بالخادم.</div>';
     }
 }
 
-// عرض نتائج البحث
+// عرض نتائج البحث 
 function renderSearchResults(games) {
     searchResults.innerHTML = '';
     if (!games || games.length === 0) {
@@ -100,9 +119,9 @@ function renderSearchResults(games) {
     });
 }
 
-// جلب تفاصيل اللعبة بالكامل وإضافتها
+// جلب تفاصيل اللعبة بالكامل
 async function fetchAndAddGameDetails(gameId) {
-    searchResults.innerHTML = '<div style="padding:20px; text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> جاري استيراد البيانات...</div>';
+    searchResults.innerHTML = '<div style="padding:20px; text-align:center;"><i class="fa-solid fa-spinner fa-spin"></i> جاري استيراد بيانات اللعبة...</div>';
     
     try {
         const response = await fetch(`https://api.rawg.io/api/games/${gameId}?key=${CONFIG.RAWG_API_KEY}`);
@@ -129,12 +148,19 @@ async function fetchAndAddGameDetails(gameId) {
         }
 
     } catch (error) {
-        console.error('Error fetching details:', error);
         searchResults.innerHTML = '<div style="padding:20px; color:#e50914; text-align:center;">حدث خطأ أثناء جلب التفاصيل.</div>';
     }
 }
 
-// تحويل التاريخ الميلادي إلى هجري
+// دالة حذف اللعبة
+window.removeGame = function(id) {
+    if (confirm('هل أنت متأكد من حذف هذه اللعبة من قائمتك؟')) {
+        StorageDB.deleteGame(id);
+        renderUpcomingGames(); // تحديث الشاشة بعد الحذف
+    }
+};
+
+// تحويل التاريخ 
 function getHijriDate(dateString) {
     if (!dateString) return 'غير محدد';
     const date = new Date(dateString);
@@ -199,16 +225,22 @@ function renderUpcomingGames() {
                     ${game.platforms.slice(0, 4).join(' • ')}
                 </p>
                 
-                <button class="icon-btn primary" style="width: 100%; border-radius: 8px; margin-top: 15px; height: auto; padding: 10px;">
-                    التفاصيل
-                </button>
+                <!-- أزرار التحكم باللعبة -->
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="icon-btn primary" style="flex: 1; border-radius: 8px; height: auto; padding: 10px;">
+                        التفاصيل
+                    </button>
+                    <button class="icon-btn" style="background: rgba(229, 9, 20, 0.1); color: var(--danger); border: 1px solid var(--danger); border-radius: 8px; width: 45px; height: auto;" onclick="removeGame(${game.id})">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
             </div>
         `;
         upcomingList.appendChild(card);
     });
 }
 
-// تحديث العدادات كل ثانية
+// تحديث العدادات التنازلية
 setInterval(() => {
     document.querySelectorAll('.countdown').forEach(el => {
         const date = el.getAttribute('data-date');
